@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>NWC 악보</title>
+  <meta name="description" content="NoteWorthy Composer 악보(.nwc)를 보고 파트별로 재생하는 찬양대 연습용 앱">
+  <meta name="theme-color" content="#3949ab">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="NWC 악보">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Home: open files and the saved library -->
+  <section id="home" class="view">
+    <header class="bar">
+      <h1>NWC 악보</h1>
+    </header>
+    <main class="home-main">
+      <label class="open-button">
+        <input id="file-input" type="file" accept=".nwc,.nwctxt,application/octet-stream" multiple hidden>
+        악보 파일 열기 <small>(.nwc / .nwctxt)</small>
+      </label>
+      <p id="install-hint" class="hint" hidden>
+        <b>아이패드에 설치하기:</b> Safari 아래(또는 위)의 공유 버튼
+        <span class="share-icon" aria-hidden="true"></span> → <b>홈 화면에 추가</b>.
+        홈 화면 아이콘으로 실행하면 인터넷 없이도 사용할 수 있습니다.
+      </p>
+      <p id="offline-status" class="hint subtle"></p>
+      <h2>저장된 악보</h2>
+      <ul id="library" class="library"></ul>
+      <p id="empty" class="empty">아직 저장된 악보가 없습니다.<br>위 버튼으로 <b>파일</b> 앱이나 카카오톡에서 저장한 .nwc 파일을 열어 주세요.
+        한 번 연 악보는 이 기기에 저장되어 인터넷 없이 다시 열 수 있습니다.</p>
+    </main>
+  </section>
+
+  <!-- Score viewer -->
+  <section id="viewer" class="view" hidden>
+    <header class="bar">
+      <button id="back" class="icon-btn" aria-label="목록으로">‹</button>
+      <h1 id="score-title"></h1>
+      <button id="zoom-out" class="icon-btn" aria-label="축소">−</button>
+      <button id="zoom-in" class="icon-btn" aria-label="확대">+</button>
+    </header>
+    <div id="stage" class="stage">
+      <canvas id="canvas"></canvas>
+      <div id="scroller" class="scroller"><div id="sizer"></div></div>
+      <div id="loading" class="loading" hidden>불러오는 중…</div>
+    </div>
+    <footer class="controls">
+      <button id="play" class="ctl play" aria-label="재생">▶</button>
+      <button id="rewind" class="ctl" aria-label="처음으로">⏮</button>
+      <div class="tempo">
+        <label for="tempo">빠르기 <span id="tempo-label">100%</span></label>
+        <input id="tempo" type="range" min="50" max="150" step="5" value="100">
+      </div>
+      <button id="parts-btn" class="ctl text">파트</button>
+    </footer>
+    <div id="status" class="status"></div>
+  </section>
+
+  <dialog id="parts">
+    <form method="dialog">
+      <h2>파트 설정</h2>
+      <label class="field">내 파트 (나머지는 흐리게 표시)
+        <select id="focus"></select>
+      </label>
+      <label class="check"><input id="quiet" type="checkbox"> 다른 파트 소리 작게</label>
+      <div id="part-rows"></div>
+      <div class="dialog-buttons">
+        <button value="cancel">닫기</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
