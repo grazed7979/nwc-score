@@ -85,6 +85,11 @@ dialog h2 { margin: 0 0 12px; color: var(--ink); font-size: 19px; }
 .field select { font-size: 17px; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
 .check { display: flex; align-items: center; gap: 8px; margin: 10px 0 4px; font-size: 16px; }
 .check input, .part-row input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--accent); }
+.toggle-all { display: flex; gap: 10px; margin: 12px 0 8px; }
+.toggle-all button {
+  flex: 1; min-height: 44px; border: 1px solid var(--accent); border-radius: 10px;
+  background: var(--surface); color: var(--accent); font-size: 15px; cursor: pointer;
+}
 .part { padding: 10px 0; border-top: 1px solid var(--line); }
 .part-name { font-size: 17px; font-weight: 500; margin-bottom: 6px; }
 .part-row { display: flex; align-items: center; gap: 14px; font-size: 15px; }

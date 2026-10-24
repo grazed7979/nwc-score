@@ -329,6 +329,26 @@ $('parts-btn').onclick = () => {
   $('quiet').checked = quietOthers;
   const rows = $('part-rows');
   rows.replaceChildren();
+  const showBoxes = [], soundBoxes = [];
+  const updateToggles = () => {
+    $('toggle-show').textContent = shown.every(Boolean) ? '보기 전체 해제' : '보기 전체 선택';
+    $('toggle-sound').textContent = audible.every(Boolean) ? '소리 전체 해제' : '소리 전체 선택';
+  };
+  $('toggle-show').onclick = () => {
+    // Turning everything off keeps the first part so the page never goes blank.
+    const on = !shown.every(Boolean);
+    shown = shown.map((_, i) => on || i === 0);
+    showBoxes.forEach((b, i) => { b.checked = shown[i]; });
+    updateToggles();
+    relayout();
+  };
+  $('toggle-sound').onclick = () => {
+    const on = !audible.every(Boolean);
+    audible = audible.map(() => on);
+    soundBoxes.forEach((b, i) => { b.checked = audible[i]; });
+    updateToggles();
+    player.applyMix(mix());
+  };
   song.staves.forEach((st, i) => {
     const div = document.createElement('div');
     div.className = 'part';
@@ -341,16 +361,20 @@ $('parts-btn').onclick = () => {
     const vol = div.querySelector('input[type=range]');
     show.checked = shown[i];
     sound.checked = audible[i];
+    showBoxes.push(show);
+    soundBoxes.push(sound);
     vol.value = Math.round(gain[i] * 100);
     show.onchange = () => {
       if (!show.checked && shown.filter(Boolean).length === 1) { show.checked = true; return; }
       shown[i] = show.checked;
+      updateToggles();
       relayout();
     };
-    sound.onchange = () => { audible[i] = sound.checked; player.applyMix(mix()); };
+    sound.onchange = () => { audible[i] = sound.checked; updateToggles(); player.applyMix(mix()); };
     vol.oninput = () => { gain[i] = vol.value / 100; player.applyMix(mix()); };
     rows.append(div);
   });
+  updateToggles();
   $('parts').showModal();
 };
 $('focus').onchange = () => {
