@@ -1,9 +1,9 @@
 // Offline cache: the whole app is stored on first visit and served from the cache afterwards.
 // Bump VERSION whenever any file changes so devices pick up the update on their next online launch.
-const VERSION = 'nwc-v2';
+const VERSION = 'nwc-v3';
 const FILES = [
   './', 'index.html', 'style.css', 'manifest.webmanifest',
-  'js/app.js', 'js/model.js', 'js/nwc.js', 'js/perform.js', 'js/layout.js', 'js/render.js', 'js/audio.js',
+  'js/app.js', 'js/model.js', 'js/nwc.js', 'js/perform.js', 'js/layout.js', 'js/render.js', 'js/audio.js', 'js/print.js',
   'fonts/Bravura.otf', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png',
 ];
 

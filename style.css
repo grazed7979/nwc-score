@@ -95,5 +95,19 @@ dialog h2 { margin: 0 0 12px; color: var(--ink); font-size: 19px; }
 .part-row { display: flex; align-items: center; gap: 14px; font-size: 15px; }
 .part-row label { display: flex; align-items: center; gap: 6px; }
 .part-row input[type=range] { flex: 1; accent-color: var(--accent); }
-.dialog-buttons { display: flex; justify-content: flex-end; padding-top: 10px; }
+.dialog-buttons { display: flex; justify-content: flex-end; gap: 8px; padding-top: 10px; flex-wrap: wrap; }
 .dialog-buttons button { border: 0; background: var(--accent); color: var(--accent-ink); border-radius: 10px; padding: 10px 22px; font-size: 16px; cursor: pointer; }
+.dialog-buttons button.secondary { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
+.dialog-buttons button:disabled { opacity: 0.5; }
+.dialog-note { font-size: 14px; color: var(--muted); line-height: 1.5; margin: 4px 0 12px; min-height: 1em; }
+.icon-btn.text { font-size: 16px; padding: 0 12px; }
+
+#print-area { display: none; }
+@media print {
+  @page { size: A4; margin: 0; }
+  body { background: #fff; }
+  body > *:not(#print-area) { display: none !important; }
+  #print-area { display: block; }
+  #print-area img { display: block; width: 210mm; height: 297mm; page-break-after: always; break-after: page; }
+  #print-area img:last-child { page-break-after: auto; break-after: auto; }
+}

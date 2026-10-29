@@ -5,6 +5,7 @@ import { ScoreLayout } from './layout.js';
 import { ScoreRenderer } from './render.js';
 import { Player } from './audio.js';
 import { displayName } from './model.js';
+import { renderPages, buildPdf, savePdf, printPages } from './print.js';
 
 const $ = id => document.getElementById(id);
 
@@ -111,6 +112,7 @@ async function openScore(rec) {
   $('home').hidden = true;
   $('viewer').hidden = false;
   $('score-title').textContent = rec.title || rec.name;
+  currentName = rec.name;
   $('loading').hidden = false;
   history.pushState({ view: 'score' }, '');
   rec.opened = Date.now();
@@ -384,6 +386,48 @@ $('focus').onchange = () => {
   draw();
 };
 $('quiet').onchange = () => { quietOthers = $('quiet').checked; player.applyMix(mix()); };
+
+// ---- Print / PDF ----------------------------------------------------------------------------
+
+let currentName = '';
+$('print-btn').onclick = () => {
+  if (!song) return;
+  $('print-status').textContent = '';
+  $('print-dialog').showModal();
+};
+
+async function makePages() {
+  const buttons = ['do-print', 'do-pdf'].map($);
+  buttons.forEach(b => { b.disabled = true; });
+  try {
+    await loadFont();
+    return await renderPages(song, shown, $('print-size').value, (done, total) => {
+      $('print-status').textContent = `페이지 만드는 중… ${done} / ${total}`;
+    });
+  } finally {
+    buttons.forEach(b => { b.disabled = false; });
+  }
+}
+
+$('do-print').onclick = async () => {
+  if (player.playing) stopPlayback(true);
+  const pages = await makePages();
+  $('print-status').textContent = `${pages.length}쪽 · 인쇄 창을 여는 중…`;
+  $('print-dialog').close();
+  await printPages(pages);
+};
+
+$('do-pdf').onclick = async () => {
+  const pages = await makePages();
+  $('print-status').textContent = `${pages.length}쪽 · PDF 만드는 중…`;
+  const title = song.title || currentName.replace(/\.nwc(txt)?$/i, '') || '악보';
+  const pdf = await buildPdf(pages, title);
+  const safe = title.replace(/[\\/:*?"<>|]/g, '_').trim() || '악보';
+  const result = await savePdf(pdf, safe + '.pdf');
+  $('print-status').textContent = result === 'cancelled' ? 'PDF 저장을 취소했습니다.'
+    : result === 'shared' ? `PDF(${pages.length}쪽)를 공유했습니다.`
+    : `PDF(${pages.length}쪽)를 저장했습니다: ${safe}.pdf`;
+};
 
 // ---- Offline support ------------------------------------------------------------------------
 

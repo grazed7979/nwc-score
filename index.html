@@ -44,6 +44,7 @@
     <header class="bar">
       <button id="back" class="icon-btn" aria-label="목록으로">‹</button>
       <h1 id="score-title"></h1>
+      <button id="print-btn" class="icon-btn text" aria-label="인쇄 / PDF">인쇄</button>
       <button id="zoom-out" class="icon-btn" aria-label="축소">−</button>
       <button id="zoom-in" class="icon-btn" aria-label="확대">+</button>
     </header>
@@ -81,6 +82,28 @@
       </div>
     </form>
   </dialog>
+
+  <dialog id="print-dialog">
+    <form method="dialog">
+      <h2>인쇄 / PDF 저장</h2>
+      <p class="dialog-note">A4 용지 기준입니다. 파트 설정에서 <b>보기</b>로 선택한 파트만 인쇄됩니다.</p>
+      <label class="field">악보 크기
+        <select id="print-size">
+          <option value="small">작게 (한 쪽에 더 많이)</option>
+          <option value="normal" selected>보통</option>
+          <option value="large">크게 (읽기 쉽게)</option>
+        </select>
+      </label>
+      <p id="print-status" class="dialog-note"></p>
+      <div class="dialog-buttons">
+        <button type="button" id="do-print" class="secondary">인쇄</button>
+        <button type="button" id="do-pdf">PDF 저장</button>
+        <button value="cancel" class="secondary">닫기</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="print-area" aria-hidden="true"></div>
 
   <script type="module" src="js/app.js"></script>
 </body>
