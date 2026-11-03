@@ -150,7 +150,7 @@ function closeViewer() {
 }
 
 $('back').onclick = () => history.back();
-window.addEventListener('popstate', () => { if (!$('viewer').hidden) closeViewer(); });
+window.addEventListener('popstate', () => { if ($('preview').hidden && !$('viewer').hidden) closeViewer(); });
 
 function setStatus(s) { $('status').textContent = s; }
 
@@ -390,35 +390,57 @@ $('quiet').onchange = () => { quietOthers = $('quiet').checked; player.applyMix(
 // ---- Print / PDF ----------------------------------------------------------------------------
 
 let currentName = '';
+// Pages shown in the preview are the ones printed or saved, so what you see is what you get.
+let previewPages = null, previewJob = 0;
+const PREVIEW_NOTE = 'A4 용지 · 파트 설정에서 \'보기\'로 선택한 파트만 인쇄됩니다.';
+
 $('print-btn').onclick = () => {
   if (!song) return;
-  $('print-status').textContent = '';
-  $('print-dialog').showModal();
+  if (player.playing) stopPlayback(true);
+  $('preview').hidden = false;
+  history.pushState({ view: 'preview' }, '');
+  renderPreview();
 };
 
-async function makePages() {
+function closePreview() {
+  $('preview').hidden = true;
+  $('preview-pages').replaceChildren();
+  previewPages = null;
+  previewJob++;
+}
+$('preview-close').onclick = () => history.back();
+window.addEventListener('popstate', () => { if (!$('preview').hidden) closePreview(); });
+$('print-size').onchange = () => renderPreview();
+
+async function renderPreview() {
+  const job = ++previewJob;
   const buttons = ['do-print', 'do-pdf'].map($);
   buttons.forEach(b => { b.disabled = true; });
-  try {
-    await loadFont();
-    return await renderPages(song, shown, $('print-size').value, (done, total) => {
-      $('print-status').textContent = `페이지 만드는 중… ${done} / ${total}`;
-    });
-  } finally {
-    buttons.forEach(b => { b.disabled = false; });
-  }
+  previewPages = null;
+  $('preview-pages').replaceChildren();
+  $('preview-count').textContent = '';
+  $('print-status').textContent = '페이지 만드는 중…';
+  await loadFont();
+  const pages = await renderPages(song, shown, $('print-size').value, (done, total) => {
+    if (job === previewJob) $('print-status').textContent = `페이지 만드는 중… ${done} / ${total}`;
+  });
+  if (job !== previewJob) return; // size changed or preview closed meanwhile
+  previewPages = pages;
+  $('preview-pages').replaceChildren(...pages);
+  $('preview-count').textContent = `· ${pages.length}쪽`;
+  $('print-status').textContent = PREVIEW_NOTE;
+  buttons.forEach(b => { b.disabled = false; });
 }
 
 $('do-print').onclick = async () => {
-  if (player.playing) stopPlayback(true);
-  const pages = await makePages();
-  $('print-status').textContent = `${pages.length}쪽 · 인쇄 창을 여는 중…`;
-  $('print-dialog').close();
-  await printPages(pages);
+  if (!previewPages) return;
+  await printPages(previewPages);
 };
 
 $('do-pdf').onclick = async () => {
-  const pages = await makePages();
+  const pages = previewPages;
+  if (!pages) return;
+  $('do-pdf').disabled = true;
   $('print-status').textContent = `${pages.length}쪽 · PDF 만드는 중…`;
   const title = song.title || currentName.replace(/\.nwc(txt)?$/i, '') || '악보';
   const pdf = await buildPdf(pages, title);
@@ -427,6 +449,7 @@ $('do-pdf').onclick = async () => {
   $('print-status').textContent = result === 'cancelled' ? 'PDF 저장을 취소했습니다.'
     : result === 'shared' ? `PDF(${pages.length}쪽)를 공유했습니다.`
     : `PDF(${pages.length}쪽)를 저장했습니다: ${safe}.pdf`;
+  $('do-pdf').disabled = false;
 };
 
 // ---- Offline support ------------------------------------------------------------------------

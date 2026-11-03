@@ -83,25 +83,22 @@
     </form>
   </dialog>
 
-  <dialog id="print-dialog">
-    <form method="dialog">
-      <h2>인쇄 / PDF 저장</h2>
-      <p class="dialog-note">A4 용지 기준입니다. 파트 설정에서 <b>보기</b>로 선택한 파트만 인쇄됩니다.</p>
-      <label class="field">악보 크기
-        <select id="print-size">
-          <option value="small">작게 (한 쪽에 더 많이)</option>
-          <option value="normal" selected>보통</option>
-          <option value="large">크게 (읽기 쉽게)</option>
-        </select>
-      </label>
-      <p id="print-status" class="dialog-note"></p>
-      <div class="dialog-buttons">
-        <button type="button" id="do-print" class="secondary">인쇄</button>
-        <button type="button" id="do-pdf">PDF 저장</button>
-        <button value="cancel" class="secondary">닫기</button>
-      </div>
-    </form>
-  </dialog>
+  <!-- Print / PDF preview: the exact A4 pages that will be printed or saved -->
+  <section id="preview" class="preview" hidden>
+    <header class="bar">
+      <button id="preview-close" class="icon-btn" aria-label="미리보기 닫기">‹</button>
+      <h1>미리보기 <span id="preview-count"></span></h1>
+      <select id="print-size" class="bar-select" aria-label="악보 크기">
+        <option value="small">작게</option>
+        <option value="normal" selected>보통</option>
+        <option value="large">크게</option>
+      </select>
+      <button id="do-print" class="icon-btn text">인쇄</button>
+      <button id="do-pdf" class="icon-btn text strong">PDF 저장</button>
+    </header>
+    <p id="print-status" class="preview-status">A4 용지 · 파트 설정에서 '보기'로 선택한 파트만 인쇄됩니다.</p>
+    <div id="preview-pages" class="preview-pages"></div>
+  </section>
 
   <div id="print-area" aria-hidden="true"></div>
 
